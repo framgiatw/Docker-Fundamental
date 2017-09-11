@@ -1,0 +1,44 @@
+version: '2'
+
+services:
+
+    application:
+        container_name: workshop_application
+        image: debian
+        volumes:
+            - ./:/data/web
+    code:
+        container_name: workshop_code
+        image: jaschac/gunicorn-django:latest
+        ports:
+            - "8000:80"
+        volumes:
+            - ./:/data/web
+    nginx:
+        container_name: workshop_nginx
+        restart: always
+        image: framgia/laravel-nginx
+        volumes_from:
+            - data
+            - application
+        ports:
+            - "8080:80"
+    data:
+        container_name: workshop_data
+        image: debian
+        volumes:
+            - .docker/mysql:/var/lib/mysql
+            - .docker/data:/data
+    mysql:
+        container_name: workshop_mysql
+        restart: always
+        image: mysql
+        volumes_from:
+            - data
+        expose:
+            - "3306"
+        environment:
+            MYSQL_DATABASE: homestead
+            MYSQL_USER: homestead
+            MYSQL_PASSWORD: secret
+            MYSQL_ROOT_PASSWORD: root
