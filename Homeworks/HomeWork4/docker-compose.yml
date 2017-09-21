@@ -1,0 +1,25 @@
+version: '2'
+
+services:
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: framgiatw
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+  web:
+    build: .
+    command: python run.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    links:
+      - db
+  nginx:
+    images: nginx
+    restart: always
+    ports:
+      - "8080:8080"
+    links:
+      - web 
+
