@@ -1,0 +1,29 @@
+version: '2'
+
+services:
+  db:
+    image: mysql
+    environment:
+      MYSQL_DATABASE: framgiatw
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: docker
+  web:
+    build: .
+    command: python run.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/venv
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+  nginx:
+    image: nginx:latest
+    container_name: ng01
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/src
+      - ./config/nginx:/etc/nginx/conf.d
+    depends_on:
+      - web
